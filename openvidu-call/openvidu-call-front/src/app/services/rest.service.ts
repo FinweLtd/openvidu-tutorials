@@ -6,6 +6,8 @@ import { catchError, lastValueFrom } from 'rxjs';
 	providedIn: 'root'
 })
 export class RestService {
+
+
 	private baseHref: string;
 
 	constructor(private http: HttpClient) {
@@ -14,6 +16,27 @@ export class RestService {
 	async getToken(sessionId: string, nickname?: string): Promise<string> {
 		try {
 			return lastValueFrom(this.http.post<any>(this.baseHref + 'call', { sessionId, nickname }));
+		} catch (error) {
+			if (error.status === 404) {
+				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
+			}
+			throw error;
+		}
+	}
+
+	startRecording(sessionId: string) {
+		try {
+			return lastValueFrom(this.http.post<any>(this.baseHref + 'call/startRecording', { sessionId }));
+		} catch (error) {
+			if (error.status === 404) {
+				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
+			}
+			throw error;
+		}
+	}
+	stopRecording(sessionId: string) {
+		try {
+			return lastValueFrom(this.http.post<any>(this.baseHref + 'call/stopRecording', { sessionId }));
 		} catch (error) {
 			if (error.status === 404) {
 				throw { status: error.status, message: 'Cannot connect with backend. ' + error.url + ' not found' };
